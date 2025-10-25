@@ -94,6 +94,7 @@ public class Poker {
         //for ai computer's decisions
         Random r = new Random();
         
+        //User enters Buy-In amount
         System.out.println("Enter Buy In:");
         Scanner scanner = new Scanner(System.in);
         int BuyIn = scanner.nextInt();
@@ -101,17 +102,21 @@ public class Poker {
             System.out.println("Please enter a valid buy in above 0.");
             System.exit(0);
         }
-        
+        //Declare User's Stack. Computer's stack is the same as user.
         int opponentStack = BuyIn;
         System.out.println("\nYour stack: " + BuyIn);
         System.out.println("Opponent's stack: " + opponentStack);
         
+        //these ints will be used to keep track of the total amount bet by the user and computer
         int PlayerBetTotal = 0;
         int OpponentBetTotal = 0;
+        //Player's Hole Cards
         String str1 = "";
         String str2 = "";
+        //Computer's Hole Cards
         String str3 = "";
         String str4 = "";
+        //Community Cards
         String str5;
         String str6;
         String str7;
@@ -151,17 +156,21 @@ public class Poker {
         cards.add("A spades");
         cards.add("A clubs");
         //array list definition ends
-        //backup deck
+        //backup deck to reset deck after each round
         deckChanger = new ArrayList<>(cards);
-        //start of while loop for game
+        //variable used for the logic to start a new round after someone went All In
         int a = 0;
+        //new rounds will keep starting until either user or computer runs out of money
         while(true) {
+            //the following logic is in case either the user or the computer goes all in. In that case, no more better will happen, and showdown will happen automatically
             if(!PlayerAllInPreFlop && !PlayerAllInFlop && !PlayerAllInTurn && !PlayerAllInRiver && !OpponentAllInPreFlop && !OpponentAllInFlop && !OpponentAllInTurn && !OpponentAllInRiver) {
                 PlayerBetTotal = 0;
                 OpponentBetTotal = 0;
             }
+            //countera is a variable that eventually flushes the scanner, if needed. If countera = 1, then it will trigger a scanner flush.
             int countera = 0;
             
+            //Logic for dealing the rest of the cards and showdown after someone goes All In.
             if(PlayerAllInPreFlop || PlayerAllInFlop || PlayerAllInTurn || PlayerAllInRiver || OpponentAllInPreFlop || OpponentAllInFlop || OpponentAllInTurn || OpponentAllInRiver) {
                 str5 = deal();
                 str6 = deal();
@@ -223,6 +232,7 @@ public class Poker {
                 Showdown(str1, str2, str3, str4, str5, str6, str7, str8, str9, BuyIn, PlayerBetTotal, opponentStack, OpponentBetTotal);
             }
             
+            //all the static variables used for All Ins and Hand-Strength Determiner Logic
             PlayerAllInPreFlop = false;
             PlayerAllInFlop = false;
             PlayerAllInTurn = false;
@@ -307,9 +317,11 @@ public class Poker {
             
             
             if(a >= 1) {
+                //if countera is triggered then flush the scanner
                 if(countera == 0) {
                     scanner.nextLine();
                 }
+                //otherwise don't flush the scanner
                 else {
                     countera = 0;
                 }
@@ -322,6 +334,7 @@ public class Poker {
             }
             a++;
             
+            //Starts a new round
             System.out.println("\n@@@@@@@@@@@@@@@@@");
             System.out.println("    NEW ROUND");
             System.out.println("@@@@@@@@@@@@@@@@@");
@@ -334,18 +347,25 @@ public class Poker {
             str3 = deal();
             str4 = deal();
             
+            //User's Choice for what to do
             System.out.println("\nChoose an option:");
             System.out.println("-------------------");
             System.out.println("1: Fold");
             System.out.println("2: Check");
             System.out.println("3: Bet");
             int option1 = scanner.nextInt();
+            //user's bet for preflop
             int PlayerBet = 0;
             PlayerBetTotal = 0;
+            //opponent's bet for preflop
             int OpponentBet = 0;
             OpponentBetTotal = 0;
+            //used for the amount of money user is allowed to bet
             int PlayerBetRange = 0;
+            //used for the amount of money the computer is allowed to bet
             int RandomRange = 0;
+            
+            //LOGIC FOR USER AND COMPUTER FOLDING, CHECKING, CALLING, BETTING, AND RAISING IN PREFLOP. SAME LOGIC IS USED FOR FLOP, TURN, AND RIVEER.
             if(option1 == 1) {
                 System.out.println("\nYou fold. You lose.");
                 System.out.println("You lost $" + PlayerBetTotal + ".");
@@ -768,6 +788,7 @@ public class Poker {
             str7 = deal();
             
             System.out.println("\n" + str5 + ", " + str6 + ", " + str7);
+            System.out.println("\nYour cards: " + str1 + ", " + str2);
             
                 System.out.println("\nChoose an option:");
                 System.out.println("-------------------");
@@ -775,7 +796,9 @@ public class Poker {
                 System.out.println("2: Check");
                 System.out.println("3: Bet");
             int option2 = scanner.nextInt();
+            //user's flop bet
             int PlayerBet2 = 0;
+            //computer's flop bet
             int OpponentBet2 = 0;
             if(option2 == 1) {
                 BuyIn -= PlayerBetTotal;
@@ -1200,6 +1223,7 @@ public class Poker {
             str8 = deal();
             
             System.out.println("\n" + str5 + ", " + str6 + ", " + str7 + ", " + str8);
+            System.out.println("\nYour cards: " + str1 + ", " + str2);
             
             System.out.println("\nChoose an option:");
             System.out.println("-------------------");
@@ -1207,7 +1231,9 @@ public class Poker {
             System.out.println("2: Check");
             System.out.println("3: Bet");
             int option3 = scanner.nextInt();
+            //user's turn bet
             int PlayerBet3 = 0;
+            //computer's turn bet
             int OpponentBet3 = 0;
             if(option3 == 1) {
                 BuyIn -= PlayerBetTotal;
@@ -1633,6 +1659,7 @@ public class Poker {
             str9 = deal();
             
             System.out.println("\n" + str5 + ", " + str6 + ", " + str7 + ", " + str8 + ", " + str9);
+            System.out.println("\nYour cards: " + str1 + ", " + str2);
             
             System.out.println("\nChoose an option:");
             System.out.println("-------------------");
@@ -1640,7 +1667,9 @@ public class Poker {
             System.out.println("2: Check");
             System.out.println("3: Bet");
             int option4 = scanner.nextInt();
+            //user's river bet
             int PlayerBet4 = 0;
+            //computer's river bet
             int OpponentBet4 = 0;
             if(option4 == 1) {
                 BuyIn -= PlayerBetTotal;
@@ -2085,6 +2114,9 @@ public class Poker {
         
         }
     
+    //START OF HAND-STRENGTH DETERMINER LOGIC////////////////////////////////////////////////
+    
+    //method for determining the suit of a card
     static String SuitChecker(String str) {
         String j = "J";
         String q = "Q";
@@ -2178,6 +2210,7 @@ public class Poker {
         
     }
     
+    //method scans the user's cards (user's hole cards and community cards) and determines how many cards of each suit there are
     static void PlayersuitCounter (String str) {
         String h = "H";
         String d = "D";
@@ -2209,6 +2242,7 @@ public class Poker {
             }
     }
     
+    //method scans the computer's cards (computer's hole cards and community cards) and determines how many cards of each suit there are
     static void OpponentsuitCounter (String str) {
         String h = "H";
         String d = "D";
@@ -2241,6 +2275,7 @@ public class Poker {
             }
     }
     
+    //converts card into its numeric value
     static int NumConverter(String str) {
         str = str.replace(" hearts", ""); 
         str = str.replace(" diamonds", "");
@@ -2273,6 +2308,7 @@ public class Poker {
         return -1;
     }
     
+    //checks for straights
     static boolean Straight(int one, int two, int three, int four, int five) {
         int[] nums = {one, two, three, four, five};
         Arrays.sort(nums);
@@ -2298,6 +2334,7 @@ public class Poker {
         return true;
     }
     
+    //logic for straight checker
     static boolean StraightChecker(int one, int two, int three, int four, int five, int six, int seven) {
         if(Straight(one, two, three, four, five)) {
             return true;
@@ -2367,6 +2404,7 @@ public class Poker {
         }
     }
     
+    //another suit checker method, used for some parts of the logic
     static String SuitChecker2(String str) {
         if(!str.replace(" hearts", "").equals(str)) {
             return "heart";
@@ -2385,6 +2423,7 @@ public class Poker {
         }
     }
     
+    //checks if the user has a straight flush
     static boolean PlayerStraightFlush(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         if(PlayerStraight && PlayerFlush) {
             int[] nums = {NumConverter(str1), NumConverter(str2), NumConverter(str3), NumConverter(str4), NumConverter(str5), NumConverter(str6), NumConverter(str7)};
@@ -2530,6 +2569,7 @@ public class Poker {
             return false;
     }
     
+    //checks if the computer has a straight flush
     static boolean OpponentStraightFlush(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         if(OpponentStraight && OpponentFlush) {
             int[] nums = {NumConverter(str1), NumConverter(str2), NumConverter(str3), NumConverter(str4), NumConverter(str5), NumConverter(str6), NumConverter(str7)};
@@ -2675,6 +2715,7 @@ public class Poker {
             return false;
     }
     
+    //checks if the user has a four of a kind
     static boolean PlayerFourOfAKind(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2694,6 +2735,7 @@ public class Poker {
         return false;
     }
     
+    //checks if the computer has a four of a kind
     static boolean OpponentFourOfAKind(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2713,6 +2755,7 @@ public class Poker {
         return false;
     }
     
+    //checks if the user has a three of a kind
     static boolean PlayerThreeOfAKind(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2761,6 +2804,7 @@ public class Poker {
         return false;
     }
     
+    //chekcs if the computer has a three of a kind
     static boolean OpponentThreeOfAKind(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2809,6 +2853,7 @@ public class Poker {
         return false;
     }
     
+    //checks if the user has a two pair
     static boolean PlayerTwoPair(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2836,6 +2881,7 @@ public class Poker {
         return false;
     }
     
+    //checks if the computer has a two pair
     static boolean OpponentTwoPair(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2863,6 +2909,7 @@ public class Poker {
         return false;
     }
     
+    //chekcs if the user has a one pair
     static boolean PlayerOnePair(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2890,6 +2937,7 @@ public class Poker {
         return false;
     }
     
+    //checks if the opponent has a one pair
     static boolean OpponentOnePair(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2917,6 +2965,7 @@ public class Poker {
         return false;
     }
     
+    //checks if the user has a full house
     static boolean PlayerFullHouse(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         if(PlayerOnePairHigh > 0 && PlayerThreeOfAKindHigh > 0) {
             PlayerFullHouseHigh1 = PlayerThreeOfAKindHigh;
@@ -2926,6 +2975,7 @@ public class Poker {
         return false;
     }
     
+    //checks if the computer has a full house
     static boolean OpponentFullHouse(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         if(OpponentOnePairHigh > 0 && OpponentThreeOfAKindHigh > 0) {
             OpponentFullHouseHigh1 = OpponentThreeOfAKindHigh;
@@ -2935,6 +2985,7 @@ public class Poker {
         return false;
     }
     
+    //checks the user's high card
     static void PlayerHighCard(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2948,6 +2999,7 @@ public class Poker {
         PlayerHighCardValue = nums[6];
     }
     
+    //checks the opponent's high card
     static void OpponentHighCard(String str1, String str2, String str3, String str4, String str5, String str6, String str7) {
         int one1 = NumConverter(str1);
         int two2 = NumConverter(str2);
@@ -2961,6 +3013,7 @@ public class Poker {
         OpponentHighCardValue = nums[6];
     }
     
+    //presents the showdown - who won (or chop), what hand they won with, and new total balances
     static void Showdown(String str1, String str2, String str3, String str4, String str5, String str6, String str7, String str8, String str9, int BuyIn, int PlayerBetTotal, int opponentStack, int OpponentBetTotal) {
         System.out.println("\n@@@@@@@@@@@@@@@@");
         System.out.println("    SHOWDOWN");
