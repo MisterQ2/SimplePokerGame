@@ -1,5 +1,6 @@
 package poker;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -84,6 +85,10 @@ public class Poker {
     static boolean Chop = false;
     static boolean PlayerWin = false;
     static boolean OpponentWin = false;
+    static int decision;
+    static double PlayerWins = 0;
+    static double OpponentWins = 0;
+    static double Chops = 0;
     
     //VARIABLES FOR VALUES OF ALL THE CARDS (4 hole cards among the player and computer, and 5 community cards)
     //Player Hole Cards
@@ -119,23 +124,6 @@ public class Poker {
 
 
     public static void main(String[] args) {
-        //for ai computer's decisions
-        Random r = new Random();
-        
-        //User enters Buy-In amount
-        System.out.println("Enter Buy In:");
-        Scanner scanner = new Scanner(System.in);
-        //Player's Buy In is there stack
-        PlayerStack = scanner.nextInt();
-        if(PlayerStack <= 0) {
-            System.out.println("Please enter a valid Buy In above 0.");
-            System.exit(0);
-        }
-        //Computer's stack is the same as user's
-        OpponentStack = PlayerStack;
-        System.out.println("\nYour stack: " + PlayerStack);
-        System.out.println("Opponent's stack: " + OpponentStack);
-        
         //Player's Hole Cards
         String str1 = "";
         String str2 = "";
@@ -186,6 +174,33 @@ public class Poker {
         //Deck of Cards definition ends
         //Backup Deck to reset deck after each round
         deckChanger = new ArrayList<>(cards);
+        
+        Scanner scanner = new Scanner(System.in);
+        
+        System.out.println("Choose an option:");
+        System.out.println("\n1: Game against Computer");
+        System.out.println("2: Statistical Simulations");
+        decision = scanner.nextInt();
+        
+        //Game Against Computer
+        if(decision == 1) {
+        //for ai computer's decisions
+        Random r = new Random();
+        
+        //User enters Buy-In amount
+        System.out.println("\nEnter Buy In:");
+        //Player's Buy In is there stack
+        PlayerStack = scanner.nextInt();
+        if(PlayerStack <= 0) {
+            System.out.println("Please enter a valid Buy In above 0.");
+            System.exit(0);
+        }
+        //Computer's stack is the same as user's
+        OpponentStack = PlayerStack;
+        System.out.println("\nYour stack: " + PlayerStack);
+        System.out.println("Opponent's stack: " + OpponentStack);
+        
+        
         //boolean used to skip the program from saying "Another Round" during the first loop of the while loop.
         boolean isFirstRound = false;
         //new rounds will keep starting until either user or computer runs out of money, or the user decides to quit
@@ -258,90 +273,7 @@ public class Poker {
             }
             
             //Reset all the static variables used for Betting Rounds, All Ins, and Hand-Strength Determiner Logic
-            PlayerAllInPreFlop = false;
-            PlayerAllInFlop = false;
-            PlayerAllInTurn = false;
-            PlayerAllInRiver = false;
-            OpponentAllInPreFlop = false;
-            OpponentAllInFlop = false;
-            OpponentAllInTurn = false;
-            OpponentAllInRiver = false;
-            PlayerHearts = 0;
-            PlayerDiamonds = 0;
-            PlayerSpades = 0;
-            PlayerClubs = 0;
-            OpponentHearts = 0;
-            OpponentDiamonds = 0;
-            OpponentSpades = 0;
-            OpponentClubs = 0;
-            PlayerRoyalFlush = false;
-            OpponentRoyalFlush = false;
-            PlayerStraightFlush = false;
-            PlayerStraightFlushHigh = 0;
-            OpponentStraightFlush = false;
-            OpponentStraightFlushHigh = 0;
-            PlayerFourOfAKind = false;
-            PlayerFourOfAKindHigh = 0;
-            OpponentFourOfAKind = false;
-            OpponentFourOfAKindHigh = 0;
-            PlayerFullHouse = false;
-            PlayerFullHouseHigh1 = 0;
-            PlayerFullHouseHigh2 = 0;
-            OpponentFullHouse = false;
-            OpponentFullHouseHigh1 = 0;
-            OpponentFullHouseHigh2 = 0;
-            PlayerFlush = false;
-            PlayerFlushHigh = 0;
-            PlayerFlushHighHeart = 0;
-            PlayerFlushHighDiamond = 0;
-            PlayerFlushHighSpade = 0;
-            PlayerFlushHighClub = 0;
-            OpponentFlush = false;
-            OpponentFlushHigh = 0;
-            OpponentFlushHighHeart = 0;
-            OpponentFlushHighDiamond = 0;
-            OpponentFlushHighSpade = 0;
-            OpponentFlushHighClub = 0;
-            FlushHigh = 0;
-            PlayerStraight = false;
-            PlayerStraightHigh = 0;
-            OpponentStraight = false;
-            OpponentStraightHigh = 0;
-            StraightHigh = 0;
-            PlayerThreeOfAKind = false;
-            PlayerThreeOfAKindHigh = 0;
-            OpponentThreeOfAKind = false;
-            OpponentThreeOfAKindHigh = 0;
-            PlayerTwoPair = false;
-            PlayerTwoPairHigh = 0;
-            OpponentTwoPair = false;
-            OpponentTwoPairHigh = 0;
-            PlayerOnePair = false;
-            PlayerOnePairHigh = 0;
-            OpponentOnePair = false;
-            OpponentOnePairHigh = 0;
-            PlayerHighCard = false;
-            PlayerHighCardValue = 0;
-            OpponentHighCard = false;
-            OpponentHighCardValue = 0;
-            Chop = false;
-            PlayerWin = false;
-            OpponentWin = false;
-            one = 0;
-            two = 0;
-            three = 0;
-            four = 0;
-            five = 0;
-            six = 0;
-            seven = 0;
-            eight = 0;
-            nine = 0;
-            PlayerBet = 0;
-            PlayerBetTotal = 0;
-            OpponentBet = 0;
-            OpponentBetTotal = 0;
-            PlayerBetRange = 0;
-            PlayerRaise = 0;
+            resetHandVariables();
             
             //if an all in just happened...
             if(isFirstRound) {
@@ -429,6 +361,53 @@ public class Poker {
         }
         
     }
+    //Statistical Simulations
+    else if(decision == 2) {
+        /*in this scenario, I want to test the equity of pocket A's vs pocker K's, so I'm manually
+        setting the hole cards for both the players while keeping the community cards random. You
+        can mess around with what you set manually and what you keep random to test out different
+        poker hand equities.
+        */
+        str1 = "A hearts";
+        str2 = "A diamonds";
+        str3 = "K hearts";
+        str4 = "K diamonds";
+        
+        cards.remove(str1);
+        cards.remove(str2);
+        cards.remove(str3);
+        cards.remove(str4);
+        
+        ArrayList<String> simulationDeck = new ArrayList<>(cards);
+        
+        for(int i = 0; i < 10000; i++) {
+            resetHandVariables();
+            cards = new ArrayList<>(simulationDeck);
+            deckReset = 0;
+            
+            str5 = deal();
+            str6 = deal();
+            str7 = deal();
+            str8 = deal();
+            str9 = deal();
+            Showdown(str1, str2, str3, str4, str5, str6, str7, str8, str9, PlayerBetTotal, OpponentBetTotal);
+        }
+        //displaying data
+        System.out.println("\nPlayer Wins: " + PlayerWins);
+        System.out.println("Opponent Wins: " + OpponentWins);
+        System.out.println("Chops: " + Chops);
+        double PlayerEquity = ((PlayerWins + (0.5*Chops))*100) / (PlayerWins + OpponentWins + Chops);
+        double OpponentEquity = ((OpponentWins + (0.5*Chops))*100) / (PlayerWins + OpponentWins + Chops);
+        DecimalFormat df = new DecimalFormat("#.##");
+        System.out.println("\nPlayer Equity: " + df.format(PlayerEquity) + "%");
+        System.out.println("Opponent Equity: " + df.format(OpponentEquity) + "%");
+    }
+    else {
+        System.out.println("\nPlease choose a valid option.");
+        System.exit(0);
+    }
+        
+  }
     
     //END OF MAIN METHOD /////////////////////////////////////////////////////////////////////////////////
     ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1353,12 +1332,14 @@ public class Poker {
     
     //presents the showdown - who won (or chop), what hand they won with, and new total balances
     static void Showdown(String str1, String str2, String str3, String str4, String str5, String str6, String str7, String str8, String str9, int PlayerBetTotal, int OpponentBetTotal) {
-        System.out.println("\n@@@@@@@@@@@@@@@@");
-        System.out.println("    SHOWDOWN");
-        System.out.println("@@@@@@@@@@@@@@@@");
-        System.out.println("\nThe Board: " + str5 + ", " + str6 + ", " + str7 + ", " + str8 + ", " + str9);
-        System.out.println("\nYour Hand: " + str1 + ", " + str2);
-        System.out.println("Opponent's Hand: " + str3 + ", " + str4);
+        if(decision != 2) {
+            System.out.println("\n@@@@@@@@@@@@@@@@");
+            System.out.println("    SHOWDOWN");
+            System.out.println("@@@@@@@@@@@@@@@@");
+            System.out.println("\nThe Board: " + str5 + ", " + str6 + ", " + str7 + ", " + str8 + ", " + str9);
+            System.out.println("\nYour Hand: " + str1 + ", " + str2);
+            System.out.println("Opponent's Hand: " + str3 + ", " + str4);
+        }
 
 
         String str1Suit = SuitChecker(str1);
@@ -1749,37 +1730,57 @@ public class Poker {
         String[] win = {"High Card", "One Pair", "Two Pair", "Three Of A Kind", "Straight", "Flush", "Full House", "Four Of A Kind", "Straight Flush", "Royal Flush"};
 
         if(PlayerWin) {
-            PlayerStack += PlayerBetTotal;
-            OpponentStack -= OpponentBetTotal;
-            System.out.println("\nYou win with a " + win[PlayerValue - 1] + "!");
-            System.out.println("You won $" + PlayerBetTotal + "!");
-            System.out.println("Your stack is now $" + PlayerStack + ".");
-            System.out.println("Opponent's stack is now $" + OpponentStack + ".");
-            deckReset++;
+            if(decision == 2) {
+                PlayerWins++;
+                deckReset++;
+            }
+            else {
+                PlayerStack += PlayerBetTotal;
+                OpponentStack -= OpponentBetTotal;
+                System.out.println("\nYou win with a " + win[PlayerValue - 1] + "!");
+                System.out.println("You won $" + PlayerBetTotal + "!");
+                System.out.println("Your stack is now $" + PlayerStack + ".");
+                System.out.println("Opponent's stack is now $" + OpponentStack + ".");
+                deckReset++;
+            }
         }
         else if(OpponentWin) {
-            PlayerStack -= PlayerBetTotal;
-            OpponentStack += OpponentBetTotal;
-            System.out.println("\nYou lose to your opponent's " + win[OpponentValue - 1] + ".");
-            System.out.println("You lost $" + PlayerBetTotal + ".");
-            System.out.println("Your stack is now $" + PlayerStack + ".");
-            System.out.println("Opponent's stack is now $" + OpponentStack + ".");
-            deckReset++;
+            if(decision == 2) {
+                OpponentWins++;
+                deckReset++;
+            }
+            else {
+                PlayerStack -= PlayerBetTotal;
+                OpponentStack += OpponentBetTotal;
+                System.out.println("\nYou lose to your opponent's " + win[OpponentValue - 1] + ".");
+                System.out.println("You lost $" + PlayerBetTotal + ".");
+                System.out.println("Your stack is now $" + PlayerStack + ".");
+                System.out.println("Opponent's stack is now $" + OpponentStack + ".");
+                deckReset++;
+            }
         }
         else if(Chop) {
-            System.out.println("\nYou chop the pot with a " + win[PlayerValue - 1] + ".");
-            System.out.println("Your stack is still $" + PlayerStack + ".");
-            System.out.println("Opponent's stack is still $" + OpponentStack + ".");
-            deckReset++;
+            if(decision == 2) {
+                Chops++;
+                deckReset++;
+            }
+            else {
+                System.out.println("\nYou chop the pot with a " + win[PlayerValue - 1] + ".");
+                System.out.println("Your stack is still $" + PlayerStack + ".");
+                System.out.println("Opponent's stack is still $" + OpponentStack + ".");
+                deckReset++;
+            }
         }
 
-        if(PlayerStack == 0) {
-            System.out.println("\nYou're out of money. Game Over.");
-            System.exit(0);
-        }
-        if(OpponentStack == 0) {
-            System.out.println("\nOpponent is out of money. You win!");
-            System.exit(0);
+        if(decision != 2) {
+            if(PlayerStack == 0) {
+                System.out.println("\nYou're out of money. Game Over.");
+                System.exit(0);
+            }
+            if(OpponentStack == 0) {
+                System.out.println("\nOpponent is out of money. You win!");
+                System.exit(0);
+            }
         }
     }
     //Method that plays through each betting round (pre-flop, flop, turn, and river)
@@ -2234,5 +2235,91 @@ public class Poker {
         System.exit(0);
     }
     
+    static void resetHandVariables() {
+        PlayerAllInPreFlop = false;
+        PlayerAllInFlop = false;
+        PlayerAllInTurn = false;
+        PlayerAllInRiver = false;
+        OpponentAllInPreFlop = false;
+        OpponentAllInFlop = false;
+        OpponentAllInTurn = false;
+        OpponentAllInRiver = false;
+        PlayerHearts = 0;
+        PlayerDiamonds = 0;
+        PlayerSpades = 0;
+        PlayerClubs = 0;
+        OpponentHearts = 0;
+        OpponentDiamonds = 0;
+        OpponentSpades = 0;
+        OpponentClubs = 0;
+        PlayerRoyalFlush = false;
+        OpponentRoyalFlush = false;
+        PlayerStraightFlush = false;
+        PlayerStraightFlushHigh = 0;
+        OpponentStraightFlush = false;
+        OpponentStraightFlushHigh = 0;
+        PlayerFourOfAKind = false;
+        PlayerFourOfAKindHigh = 0;
+        OpponentFourOfAKind = false;
+        OpponentFourOfAKindHigh = 0;
+        PlayerFullHouse = false;
+        PlayerFullHouseHigh1 = 0;
+        PlayerFullHouseHigh2 = 0;
+        OpponentFullHouse = false;
+        OpponentFullHouseHigh1 = 0;
+        OpponentFullHouseHigh2 = 0;
+        PlayerFlush = false;
+        PlayerFlushHigh = 0;
+        PlayerFlushHighHeart = 0;
+        PlayerFlushHighDiamond = 0;
+        PlayerFlushHighSpade = 0;
+        PlayerFlushHighClub = 0;
+        OpponentFlush = false;
+        OpponentFlushHigh = 0;
+        OpponentFlushHighHeart = 0;
+        OpponentFlushHighDiamond = 0;
+        OpponentFlushHighSpade = 0;
+        OpponentFlushHighClub = 0;
+        FlushHigh = 0;
+        PlayerStraight = false;
+        PlayerStraightHigh = 0;
+        OpponentStraight = false;
+        OpponentStraightHigh = 0;
+        StraightHigh = 0;
+        PlayerThreeOfAKind = false;
+        PlayerThreeOfAKindHigh = 0;
+        OpponentThreeOfAKind = false;
+        OpponentThreeOfAKindHigh = 0;
+        PlayerTwoPair = false;
+        PlayerTwoPairHigh = 0;
+        OpponentTwoPair = false;
+        OpponentTwoPairHigh = 0;
+        PlayerOnePair = false;
+        PlayerOnePairHigh = 0;
+        OpponentOnePair = false;
+        OpponentOnePairHigh = 0;
+        PlayerHighCard = false;
+        PlayerHighCardValue = 0;
+        OpponentHighCard = false;
+        OpponentHighCardValue = 0;
+        Chop = false;
+        PlayerWin = false;
+        OpponentWin = false;
+        one = 0;
+        two = 0;
+        three = 0;
+        four = 0;
+        five = 0;
+        six = 0;
+        seven = 0;
+        eight = 0;
+        nine = 0;
+        PlayerBet = 0;
+        PlayerBetTotal = 0;
+        OpponentBet = 0;
+        OpponentBetTotal = 0;
+        PlayerBetRange = 0;
+        PlayerRaise = 0;
+    }
+    
 }
-
