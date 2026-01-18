@@ -1563,7 +1563,7 @@ public class Poker {
             PlayerHighCard = true;
             PlayerHighCard(str1, str2, str5, str6, str7, str8, str9);
         }
-        if(!OpponentOnePair && !OpponentTwoPair && !OpponentThreeOfAKind && !OpponentStraight && !OpponentFlush && OpponentFullHouse && !OpponentFourOfAKind && !OpponentStraightFlush && !OpponentRoyalFlush) {
+        if(!OpponentOnePair && !OpponentTwoPair && !OpponentThreeOfAKind && !OpponentStraight && !OpponentFlush && !OpponentFullHouse && !OpponentFourOfAKind && !OpponentStraightFlush && !OpponentRoyalFlush) {
             OpponentHighCard = true;
             OpponentHighCard(str3, str4, str5, str6, str7, str8, str9);
         }
@@ -2235,3 +2235,4 @@ public class Poker {
     }
     
 }
+
