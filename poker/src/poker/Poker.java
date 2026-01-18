@@ -3,6 +3,7 @@ package poker;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Scanner;
 import java.util.Random;
 public class Poker {
@@ -82,6 +83,16 @@ public class Poker {
     static int PlayerHighCardValue = 0;
     static boolean OpponentHighCard = false;
     static int OpponentHighCardValue = 0;
+    static ArrayList<Integer> PlayerHighCardKickers = new ArrayList<>();
+    static ArrayList<Integer> PlayerOnePairKickers = new ArrayList<>();
+    static ArrayList<Integer> PlayerTwoPairKickers = new ArrayList<>();
+    static ArrayList<Integer> PlayerThreeOfAKindKickers = new ArrayList<>();
+    static ArrayList<Integer> PlayerFourOfAKindKickers = new ArrayList<>();
+    static ArrayList<Integer> OpponentHighCardKickers = new ArrayList<>();
+    static ArrayList<Integer> OpponentOnePairKickers = new ArrayList<>();
+    static ArrayList<Integer> OpponentTwoPairKickers = new ArrayList<>();
+    static ArrayList<Integer> OpponentThreeOfAKindKickers = new ArrayList<>();
+    static ArrayList<Integer> OpponentFourOfAKindKickers = new ArrayList<>();
     static boolean Chop = false;
     static boolean PlayerWin = false;
     static boolean OpponentWin = false;
@@ -363,15 +374,27 @@ public class Poker {
     }
     //Statistical Simulations
     else if(decision == 2) {
-        /*in this scenario, I want to test the equity of pocket A's vs pocker K's, so I'm manually
-        setting the hole cards for both the players while keeping the community cards random. You
-        can mess around with what you set manually and what you keep random to test out different
-        poker hand equities.
+        /*in this scenario, I want to test the equity of pocket Aces vs pocket Kings, so I'm manually
+        setting the hole cards for both the players while keeping the community cards random. Given 10,000
+        trials, the program will output somewhere from ~81-82% equity for the pocket Aces and ~18-19% equity
+        for the Kings (which is roughly equal to the actual equity of these hands). The more trials you do,
+        the more accurate your percentages will be, but the program will take longer to run (you'll really start
+        noticing long wait times once you get to 100k+ trials--100k trials takes ~2 seconds, while 1M trials takes
+        ~20 seconds to run).
+
+        To set up a situation, if you want to manually set a card, set it equal to a string with the format
+        as shown below for str1-str4. Put write number/letter abbreviation of the card (for 10, use the numerical
+        value "10" instead of the letter "T"), and then write the suit of the card all lowercase and plural. If
+        you want a card to remain random, set it equal to deal(), as shown for str5-str9.
+        
+        *NOTE* If you want to manually set a card, you must do so outside the for loop and then remove the card from
+        the deck manually via cards.remove(), as seen below for removing str1-str4 from the deck. This way, when you
+        go to randomly generate the other cards, they cannot be duplicates of the card you manually chose.
         */
         str1 = "A hearts";
         str2 = "A diamonds";
-        str3 = "K hearts";
-        str4 = "K diamonds";
+        str3 = "K clubs";
+        str4 = "K spades";
         
         cards.remove(str1);
         cards.remove(str2);
@@ -1046,6 +1069,11 @@ public class Poker {
         for(int i = 6; i >= 3; i--) {
             if(nums[i] - nums[i - 1] == 0 && nums[i - 1] - nums[i - 2] == 0 && nums[i - 2] - nums[i - 3] == 0) {
                 PlayerFourOfAKindHigh = nums[i];
+                for(int j = 0; j < nums.length; j++) {
+                    if(nums[j] != PlayerFourOfAKindHigh) {
+                        PlayerFourOfAKindKickers.add(nums[j]);
+                    }
+                }
                 return true;
             }
         }
@@ -1066,6 +1094,11 @@ public class Poker {
         for(int i = 6; i >= 3; i--) {
             if(nums[i] - nums[i - 1] == 0 && nums[i - 1] - nums[i - 2] == 0 && nums[i - 2] - nums[i - 3] == 0) {
                 OpponentFourOfAKindHigh = nums[i];
+                for(int j = 0; j < nums.length; j++) {
+                    if(nums[j] != OpponentFourOfAKindHigh) {
+                        OpponentFourOfAKindKickers.add(nums[j]);
+                    }
+                }
                 return true;
             }
         }
@@ -1112,9 +1145,19 @@ public class Poker {
         if(counter1 == 2 || counter2 == 2) {
             if(value > value2) {
                 PlayerThreeOfAKindHigh = value;
+                for(int j = 0; j < nums.length; j++) {
+                    if(nums[j] != PlayerThreeOfAKindHigh) {
+                        PlayerThreeOfAKindKickers.add(nums[j]);
+                    }
+                }
             }
             else {
                 PlayerThreeOfAKindHigh = value2;
+                for(int j = 0; j < nums.length; j++) {
+                    if(nums[j] != PlayerThreeOfAKindHigh) {
+                        PlayerThreeOfAKindKickers.add(nums[j]);
+                    }
+                }
             }
             return true;
         }
@@ -1161,9 +1204,19 @@ public class Poker {
         if(counter1 == 2 || counter2 == 2) {
             if(value > value2) {
                 OpponentThreeOfAKindHigh = value;
+                for(int j = 0; j < nums.length; j++) {
+                    if(nums[j] != OpponentThreeOfAKindHigh) {
+                        OpponentThreeOfAKindKickers.add(nums[j]);
+                    }
+                }
             }
             else {
                 OpponentThreeOfAKindHigh = value2;
+                for(int j = 0; j < nums.length; j++) {
+                    if(nums[j] != OpponentThreeOfAKindHigh) {
+                        OpponentThreeOfAKindKickers.add(nums[j]);
+                    }
+                }
             }
             return true;
         }
@@ -1193,6 +1246,11 @@ public class Poker {
         }
         if(counter1 >= 2) {
             PlayerTwoPairHigh = value;
+            for(int j = 0; j < nums.length; j++) {
+                if(nums[j] != PlayerTwoPairHigh) {
+                    PlayerTwoPairKickers.add(nums[j]);
+                }
+            }
             return true;
         }
         return false;
@@ -1221,6 +1279,11 @@ public class Poker {
         }
         if(counter1 >= 2) {
             OpponentTwoPairHigh = value;
+            for(int j = 0; j < nums.length; j++) {
+                if(nums[j] != OpponentTwoPairHigh) {
+                    OpponentTwoPairKickers.add(nums[j]);
+                }
+            }
             return true;
         }
         return false;
@@ -1249,6 +1312,11 @@ public class Poker {
         }
         if(counter1 >= 1) {
             PlayerOnePairHigh = value;
+            for(int j = 0; j < nums.length; j++) {
+                if(nums[j] != PlayerOnePairHigh) {
+                    PlayerOnePairKickers.add(nums[j]);
+                }
+            }
             return true;
         }
         return false;
@@ -1277,6 +1345,11 @@ public class Poker {
         }
         if(counter1 >= 1) {
             OpponentOnePairHigh = value;
+            for(int j = 0; j < nums.length; j++) {
+                if(nums[j] != OpponentOnePairHigh) {
+                    OpponentOnePairKickers.add(nums[j]);
+                }
+            }
             return true;
         }
         return false;
@@ -1314,6 +1387,9 @@ public class Poker {
         int[] nums = {one1, two2, three3, four4, five5, six6, seven7};
         Arrays.sort(nums);
         PlayerHighCardValue = nums[6];
+        for(int j = 0; j <= 5; j++) {
+            PlayerHighCardKickers.add(nums[j]);
+        }
     }
     
     //checks the opponent's high card
@@ -1328,6 +1404,9 @@ public class Poker {
         int[] nums = {one1, two2, three3, four4, five5, six6, seven7};
         Arrays.sort(nums);
         OpponentHighCardValue = nums[6];
+        for(int j = 0; j <= 5; j++) {
+            OpponentHighCardKickers.add(nums[j]);
+        }
     }
     
     //presents the showdown - who won (or chop), what hand they won with, and new total balances
@@ -1628,7 +1707,23 @@ public class Poker {
                     OpponentWin = true;
                 }
                 else {
-                    Chop = true;
+                    Collections.sort(PlayerHighCardKickers);
+                    Collections.sort(OpponentHighCardKickers);
+                    for(int i = 1; i <= 4; i++) {
+                        int a = PlayerHighCardKickers.get(PlayerHighCardKickers.size() - i);
+                        int b = OpponentHighCardKickers.get(OpponentHighCardKickers.size() - i);
+                        if(a > b) {
+                            PlayerWin = true;
+                            break;
+                        }
+                        if(b > a) {
+                            OpponentWin = true;
+                            break;
+                        }
+                        if(i == 4) {
+                            Chop = true;
+                        }
+                    }
                 }
             }
             else if(PlayerValue == 2) {
@@ -1639,7 +1734,23 @@ public class Poker {
                     OpponentWin = true;
                 }
                 else {
-                    Chop = true;
+                    Collections.sort(PlayerOnePairKickers);
+                    Collections.sort(OpponentOnePairKickers);
+                    for(int i = 1; i <= 3; i++) {
+                        int a = PlayerOnePairKickers.get(PlayerOnePairKickers.size() - i);
+                        int b = OpponentOnePairKickers.get(OpponentOnePairKickers.size() - i);
+                        if(a > b) {
+                            PlayerWin = true;
+                            break;
+                        }
+                        if(b > a) {
+                            OpponentWin = true;
+                            break;
+                        }
+                        if(i == 3) {
+                            Chop = true;
+                        }
+                    }
                 }
             }
             else if(PlayerValue == 3) {
@@ -1650,7 +1761,23 @@ public class Poker {
                     OpponentWin = true;
                 }
                 else {
-                    Chop = true;
+                    Collections.sort(PlayerTwoPairKickers);
+                    Collections.sort(OpponentTwoPairKickers);
+                    for(int i = 1; i <= 1; i++) {
+                        int a = PlayerTwoPairKickers.get(PlayerTwoPairKickers.size() - i);
+                        int b = OpponentTwoPairKickers.get(OpponentTwoPairKickers.size() - i);
+                        if(a > b) {
+                            PlayerWin = true;
+                            break;
+                        }
+                        if(b > a) {
+                            OpponentWin = true;
+                            break;
+                        }
+                        if(i == 1) {
+                            Chop = true;
+                        }
+                    }
                 }
             }
             else if(PlayerValue == 4) {
@@ -1661,7 +1788,23 @@ public class Poker {
                     OpponentWin = true;
                 }
                 else {
-                    Chop = true;
+                    Collections.sort(PlayerThreeOfAKindKickers);
+                    Collections.sort(OpponentThreeOfAKindKickers);
+                    for(int i = 1; i <= 2; i++) {
+                        int a = PlayerThreeOfAKindKickers.get(PlayerThreeOfAKindKickers.size() - i);
+                        int b = OpponentThreeOfAKindKickers.get(OpponentThreeOfAKindKickers.size() - i);
+                        if(a > b) {
+                            PlayerWin = true;
+                            break;
+                        }
+                        if(b > a) {
+                            OpponentWin = true;
+                            break;
+                        }
+                        if(i == 2) {
+                            Chop = true;
+                        }
+                    }
                 }
             }
             else if(PlayerValue == 5) {
@@ -1711,7 +1854,23 @@ public class Poker {
                     OpponentWin = true;
                 }
                 else {
-                    Chop = true;
+                    Collections.sort(PlayerFourOfAKindKickers);
+                    Collections.sort(OpponentFourOfAKindKickers);
+                    for(int i = 1; i <= 1; i++) {
+                        int a = PlayerFourOfAKindKickers.get(PlayerFourOfAKindKickers.size() - i);
+                        int b = OpponentFourOfAKindKickers.get(OpponentFourOfAKindKickers.size() - i);
+                        if(a > b) {
+                            PlayerWin = true;
+                            break;
+                        }
+                        if(b > a) {
+                            OpponentWin = true;
+                            break;
+                        }
+                        if(i == 1) {
+                            Chop = true;
+                        }
+                    }
                 }
             }
             else if(PlayerValue == 9) {
@@ -2302,6 +2461,16 @@ public class Poker {
         PlayerHighCardValue = 0;
         OpponentHighCard = false;
         OpponentHighCardValue = 0;
+        PlayerHighCardKickers = new ArrayList<>();
+        PlayerOnePairKickers = new ArrayList<>();
+        PlayerTwoPairKickers = new ArrayList<>();
+        PlayerThreeOfAKindKickers = new ArrayList<>();
+        PlayerFourOfAKindKickers = new ArrayList<>();
+        OpponentHighCardKickers = new ArrayList<>();
+        OpponentOnePairKickers = new ArrayList<>();
+        OpponentTwoPairKickers = new ArrayList<>();
+        OpponentThreeOfAKindKickers = new ArrayList<>();
+        OpponentFourOfAKindKickers = new ArrayList<>();
         Chop = false;
         PlayerWin = false;
         OpponentWin = false;
