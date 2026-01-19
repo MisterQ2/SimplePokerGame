@@ -73,8 +73,10 @@ public class Poker {
     static int OpponentThreeOfAKindHigh = 0;
     static boolean PlayerTwoPair = false;
     static int PlayerTwoPairHigh = 0;
+    static int PlayerTwoPairSecondHigh = 0;
     static boolean OpponentTwoPair = false;
     static int OpponentTwoPairHigh = 0;
+    static int OpponentTwoPairSecondHigh = 0;
     static boolean PlayerOnePair = false;
     static int PlayerOnePairHigh = 0;
     static boolean OpponentOnePair = false;
@@ -100,6 +102,8 @@ public class Poker {
     static double PlayerWins = 0;
     static double OpponentWins = 0;
     static double Chops = 0;
+    //used to determine how strong the computer's hand is, so that it can make decisions accordingly
+    static int OpponentHandStrength = 0;
     
     //VARIABLES FOR VALUES OF ALL THE CARDS (4 hole cards among the player and computer, and 5 community cards)
     //Player Hole Cards
@@ -132,6 +136,9 @@ public class Poker {
     static int PlayerBetRange = 0;
     //used to tell the user how much they are able to raise by, should the situation arise
     static int PlayerRaise = 0;
+    //the blind that gets automatically bet by the player and the computer each round
+    static int blind = 0;
+    static int blindAllInScannerFlusher = 0;
 
 
     public static void main(String[] args) {
@@ -207,10 +214,12 @@ public class Poker {
             System.exit(0);
         }
         //Computer's stack is the same as user's
-        OpponentStack = PlayerStack;
-        System.out.println("\nYour stack: " + PlayerStack);
-        System.out.println("Opponent's stack: " + OpponentStack);
-        
+        OpponentStack = PlayerStack;      
+        System.out.println("\nYour stack: $" + PlayerStack);
+        System.out.println("Opponent's stack: $" + OpponentStack);
+        //blind for each round
+        blind = (int)(PlayerStack * 0.02);
+        if(blind > 0) System.out.println("\nThe blind for each round is $" + blind + ".");
         
         //boolean used to skip the program from saying "Another Round" during the first loop of the while loop.
         boolean isFirstRound = false;
@@ -235,8 +244,14 @@ public class Poker {
                     System.out.println("@@@@@@@@@@@@");
 
                     System.out.println("\n" + str5 + ", " + str6 + ", " + str7);
+                    System.out.println("\nYour Hand: " + str1 + ", " + str2);
                     System.out.println("\nPress p to proceed:");
-                    scanner.nextLine();
+                    if(blindAllInScannerFlusher == 0) {
+                        scanner.nextLine();
+                    }
+                    else {
+                        blindAllInScannerFlusher = 0;
+                    }
                     ScannerFlusher++;
                     if(!scanner.nextLine().equals("p")) {
                         System.out.println("\nPlease enter a valid response.");
@@ -250,6 +265,7 @@ public class Poker {
                     System.out.println("@@@@@@@@@@@@");
 
                     System.out.println("\n" + str5 + ", " + str6 + ", " + str7 + ", " + str8);
+                    System.out.println("\nYour Hand: " + str1 + ", " + str2);
                     System.out.println("\nPress p to proceed:");
                     if(PlayerAllInFlop || OpponentAllInFlop) {
                         scanner.nextLine();
@@ -268,7 +284,7 @@ public class Poker {
                     System.out.println("@@@@@@@@@@@@@");
 
                     System.out.println("\n" + str5 + ", " + str6 + ", " + str7 + ", " + str8 + ", " + str9);
-                    
+                    System.out.println("\nYour Hand: " + str1 + ", " + str2);
                     System.out.println("\nPress p to proceed:");
                     if(PlayerAllInTurn || OpponentAllInTurn) {
                         scanner.nextLine();
@@ -317,6 +333,40 @@ public class Poker {
             //Opponent's hole cards
             str3 = deal();
             str4 = deal();
+            
+            //calculates the computer's hand strength
+            opponentHandStrength(str3, str4);
+            
+            //add blinds to the pot, if there are blinds
+            if(blind > 0) {
+                int totalBlinds;
+                if(PlayerStack - blind <= 0) {
+                    PlayerBetTotal = PlayerStack;
+                    OpponentBetTotal = PlayerBetTotal;
+                    PlayerAllInPreFlop = true;
+                    blindAllInScannerFlusher++;
+                    totalBlinds = PlayerBetTotal*2;
+                    System.out.println("\n$" + totalBlinds + " in blinds has been added to the pot.");
+                    System.out.println("\nYou're All In!");
+                    continue;
+                }
+                else if(OpponentStack - blind <= 0) {
+                    OpponentBetTotal = OpponentStack;
+                    PlayerBetTotal = OpponentBetTotal;
+                    OpponentAllInPreFlop = true;
+                    blindAllInScannerFlusher++;
+                    totalBlinds = OpponentBetTotal*2;
+                    System.out.println("\n$" + totalBlinds + " in blinds has been added to the pot.");
+                    System.out.println("\nOpponent's All In!");
+                    continue;
+                }
+                else {
+                    PlayerBetTotal += blind;
+                    OpponentBetTotal += blind;
+                    totalBlinds = blind*2;
+                    System.out.println("\n$" + totalBlinds + " in blinds has been added to the pot.");
+                }
+            }
             
             //int will signal which betting round it is (pre-flop, flop, etc.) so that the bettingRound method can trigger the correct All In booleans
             int BettingRoundSignaler = 1;
@@ -391,6 +441,7 @@ public class Poker {
         the deck manually via cards.remove(), as seen below for removing str1-str4 from the deck. This way, when you
         go to randomly generate the other cards, they cannot be duplicates of the card you manually chose.
         */
+        
         str1 = "A hearts";
         str2 = "A diamonds";
         str3 = "K clubs";
@@ -408,11 +459,12 @@ public class Poker {
             cards = new ArrayList<>(simulationDeck);
             deckReset = 0;
             
-            str5 = deal();
+            str5 = deal(); 
             str6 = deal();
             str7 = deal();
             str8 = deal();
             str9 = deal();
+            
             Showdown(str1, str2, str3, str4, str5, str6, str7, str8, str9, PlayerBetTotal, OpponentBetTotal);
         }
         //displaying data
@@ -677,9 +729,6 @@ public class Poker {
     //logic for straight checker
     static boolean StraightChecker(int one, int two, int three, int four, int five, int six, int seven) {
         if(Straight(one, two, three, four, five)) {
-            return true;
-        }
-        else if(Straight(one, two, three, four, six)) {
             return true;
         }
         else if(Straight(one, two, three, four, six)) {
@@ -1236,18 +1285,30 @@ public class Poker {
         Arrays.sort(nums);
         int counter1 = 0;
         int value = 0;
+        int value2 = 0;
         for(int i = 6; i > 0; i--) {
             if(nums[i] - nums[i - 1] == 0) {
                 counter1++;
                 if(nums[i] > value) {
-                    value = nums[i];
+                    if(value == 0) {
+                        value = nums[i];
+                    }
+                    else {
+                        value2 = value;
+                        value = nums[i];
+                    }
                 }
+                else {
+                    value2 = nums[i];
+                }
+                if(counter1 == 2) break;
             }
         }
-        if(counter1 >= 2) {
+        if(counter1 == 2) {
             PlayerTwoPairHigh = value;
+            PlayerTwoPairSecondHigh = value2;
             for(int j = 0; j < nums.length; j++) {
-                if(nums[j] != PlayerTwoPairHigh) {
+                if(nums[j] != PlayerTwoPairHigh && nums[j] != PlayerTwoPairSecondHigh) {
                     PlayerTwoPairKickers.add(nums[j]);
                 }
             }
@@ -1269,18 +1330,30 @@ public class Poker {
         Arrays.sort(nums);
         int counter1 = 0;
         int value = 0;
+        int value2 = 0;
         for(int i = 6; i > 0; i--) {
             if(nums[i] - nums[i - 1] == 0) {
                 counter1++;
                 if(nums[i] > value) {
-                    value = nums[i];
+                    if(value == 0) {
+                        value = nums[i];
+                    }
+                    else {
+                        value2 = value;
+                        value = nums[i];
+                    }
                 }
+                else {
+                    value2 = nums[i];
+                }
+                if(counter1 == 2) break;
             }
         }
-        if(counter1 >= 2) {
+        if(counter1 == 2) {
             OpponentTwoPairHigh = value;
+            OpponentTwoPairSecondHigh = value2;
             for(int j = 0; j < nums.length; j++) {
-                if(nums[j] != OpponentTwoPairHigh) {
+                if(nums[j] != OpponentTwoPairHigh && nums[j] != OpponentTwoPairSecondHigh) {
                     OpponentTwoPairKickers.add(nums[j]);
                 }
             }
@@ -1761,21 +1834,29 @@ public class Poker {
                     OpponentWin = true;
                 }
                 else {
-                    Collections.sort(PlayerTwoPairKickers);
-                    Collections.sort(OpponentTwoPairKickers);
-                    for(int i = 1; i <= 1; i++) {
-                        int a = PlayerTwoPairKickers.get(PlayerTwoPairKickers.size() - i);
-                        int b = OpponentTwoPairKickers.get(OpponentTwoPairKickers.size() - i);
-                        if(a > b) {
-                            PlayerWin = true;
-                            break;
-                        }
-                        if(b > a) {
-                            OpponentWin = true;
-                            break;
-                        }
-                        if(i == 1) {
-                            Chop = true;
+                    if(PlayerTwoPairSecondHigh > OpponentTwoPairSecondHigh) {
+                        PlayerWin = true;
+                    }
+                    else if(PlayerTwoPairSecondHigh < OpponentTwoPairSecondHigh) {
+                        OpponentWin = true;
+                    }
+                    else {
+                        Collections.sort(PlayerTwoPairKickers);
+                        Collections.sort(OpponentTwoPairKickers);
+                        for(int i = 1; i <= 1; i++) {
+                            int a = PlayerTwoPairKickers.get(PlayerTwoPairKickers.size() - i);
+                            int b = OpponentTwoPairKickers.get(OpponentTwoPairKickers.size() - i);
+                            if(a > b) {
+                                PlayerWin = true;
+                                break;
+                            }
+                            if(b > a) {
+                                OpponentWin = true;
+                                break;
+                            }
+                            if(i == 1) {
+                                Chop = true;
+                            }
                         }
                     }
                 }
@@ -1991,9 +2072,25 @@ public class Poker {
                 if(PlayerBetTotal == PlayerStack || PlayerBet + OpponentBetTotal == OpponentStack) {
                     AllInFlagger(BettingRoundSignaler, true, true);
                     if(PlayerStack <= OpponentStack) System.out.println("\nYou're All In!");
-                    else if(PlayerStack > OpponentStack) System.out.println("\nYou put you're opponent All In!");
-                    //generate computer's response: 10% chance fold, 90% chance call
-                    int RandomNum = r.nextInt(10) + 1;
+                    else if(PlayerStack > OpponentStack) System.out.println("\nYou put your opponent All In!");
+                    //generate computer's response based on its hand strength to fold or call
+                    int RandomNum = 0;
+                    if(OpponentHandStrength >= 22) {
+                        RandomNum = 2;
+                    }
+                    else if(OpponentHandStrength >= 18) {
+                        int x = r.nextInt(10) + 1;
+                        if(x < 3) RandomNum = 1;
+                        else RandomNum = 2;
+                    }
+                    else if(OpponentHandStrength >= 14) {
+                        int x = r.nextInt(10) + 1;
+                        if(x < 8) RandomNum = 1;
+                        else RandomNum = 2;
+                    }
+                    else if(OpponentHandStrength < 14) {
+                        RandomNum = 1;
+                    }
                         //if computer folds:
                         if(RandomNum == 1) {
                             PlayerStack += PlayerBetTotal - PlayerBet;
@@ -2017,8 +2114,33 @@ public class Poker {
             
             //if player checked:
             if(option == 2) {
-                //computer makes a choice: 50% check back, 50% bet
-                int RandomNum = r.nextInt(2) + 1;
+                //computer makes a choice based on its hand strength to check or bet
+                int RandomNum = 0;
+                if(OpponentHandStrength >= 26) {
+                    int x = r.nextInt(10) + 1;
+                    if(x < 3) RandomNum = 1;
+                    else RandomNum = 2;
+                }
+                else if(OpponentHandStrength >= 22) {
+                    int x = r.nextInt(10) + 1;
+                    if(x < 4) RandomNum = 1;
+                    else RandomNum = 2;
+                }
+                else if(OpponentHandStrength >= 18) {
+                    int x = r.nextInt(10) + 1;
+                    if(x < 6) RandomNum = 1;
+                    else RandomNum = 2;
+                }
+                else if(OpponentHandStrength >= 14) {
+                    int x = r.nextInt(10) + 1;
+                    if(x < 6) RandomNum = 1;
+                    else RandomNum = 2;
+                }
+                else if(OpponentHandStrength < 14) {
+                    int x = r.nextInt(10) + 1;
+                    if(x < 8) RandomNum = 1;
+                    else RandomNum = 2;
+                }
                 //if computer checks, tell the user
                 if(RandomNum == 1) {
                     System.out.println("\nOpponent checks back.");
@@ -2074,6 +2196,23 @@ public class Poker {
                         }
                     }
                     //otherwise if there's no All Ins
+                    if(OpponentHandStrength >= 18) {
+                        int x = r.nextInt(10) + 1;
+                        if(x < 4) RandomNum = 1;
+                        else RandomNum = 2;
+                    }
+                    else if(OpponentHandStrength < 18) {
+                        int x = r.nextInt(10) + 1;
+                        if(x < 8) RandomNum = 1;
+                        else RandomNum = 2;
+                    }
+                    if(RandomNum == 1) {
+                        RandomNum2 = (int)(RandomNum2 * 0.25);
+                    }
+                    else if(RandomNum == 2) {
+                        RandomNum2 = (int)(RandomNum2 * 0.5);
+                    }
+                    if(RandomNum2 == 0) RandomNum2++;
                     System.out.println("\nOpponent bets $" + RandomNum2 + ".");
                     OpponentBetTotal += RandomNum2;
                     //prompt player to respond to computer's bet by either folding, calling, or raising
@@ -2122,8 +2261,23 @@ public class Poker {
                                 else {
                                     System.out.println("\nYou raise your opponent All In!");
                                 }
-                                //generate computer's response to the All In raise: 10% fold, 90% call 
-                                RandomNum = r.nextInt(10) + 1;
+                                //generate computer's response to the All In raise: either fold or call 
+                                if(OpponentHandStrength >= 22) {
+                                    RandomNum = 2;
+                                }
+                                else if(OpponentHandStrength >= 18) {
+                                    int x = r.nextInt(10) + 1;
+                                    if(x < 3) RandomNum = 1;
+                                    else RandomNum = 2;
+                                }
+                                else if(OpponentHandStrength >= 14) {
+                                    int x = r.nextInt(10) + 1;
+                                    if(x < 8) RandomNum = 1;
+                                    else RandomNum = 2;
+                                }
+                                else if(OpponentHandStrength < 14) {
+                                    RandomNum = 1;
+                                }
                                     //computer folds:
                                     if(RandomNum == 1) {
                                         PlayerStack += PlayerBetTotal;
@@ -2145,10 +2299,27 @@ public class Poker {
                             }
                             //other wise if the player's raise doesn't cause any All Ins:
                             PlayerBetTotal += PlayerBet;
-                            //generate computer's response: 30% fold, 70% call
-                            RandomNum = r.nextInt(10) + 1;
+                            //generate computer's response: either fold or call
+                            if(OpponentHandStrength >= 22) {
+                                RandomNum = 2;
+                            }
+                            else if(OpponentHandStrength >= 18) {
+                                int x = r.nextInt(10) + 1;
+                                if(x < 4) RandomNum = 1;
+                                else RandomNum = 2;
+                            }
+                            else if(OpponentHandStrength >= 14) {
+                                int x = r.nextInt(10) + 1;
+                                if(x < 7) RandomNum = 1;
+                                else RandomNum = 2;
+                            }
+                            else if(OpponentHandStrength < 14) {
+                                int x = r.nextInt(10) + 1;
+                                if(x < 9) RandomNum = 1;
+                                else RandomNum = 2;
+                            }
                             //if computer folds:
-                            if(RandomNum == 1 || RandomNum == 2 || RandomNum == 3) {
+                            if(RandomNum == 1) {
                                 PlayerBetTotal -= PlayerBet;
                                 PlayerStack += PlayerBetTotal;
                                 OpponentStack -= OpponentBetTotal;
@@ -2172,168 +2343,239 @@ public class Poker {
             }
             //if we initially bet and didn't go to an All In situation:
             else if(option == 3) {
-                //generate computer's response: 20% fold, 40% call, 40% raise
-                int RandomNum = r.nextInt(10) + 1;
-                    //if computer folds:
-                    if(RandomNum == 1 || RandomNum == 2) {
-                        PlayerBetTotal -= PlayerBet;
-                        PlayerStack += PlayerBetTotal;
-                        OpponentStack -= OpponentBetTotal;
-                        System.out.println("\nOpponent folds. You win!");
-                        System.out.println("You win $" + PlayerBetTotal + "!");
-                        System.out.println("Your stack is now $" + PlayerStack + ".");
-                        System.out.println("Opponent's stack is now $" + OpponentStack + ".");
-                        deckReset++;
-                        return true;
+                //generate computer's response: fold, call, or raise
+                int RandomNum = 0;
+                if(OpponentHandStrength >= 22) {
+                    int x = r.nextInt(10) + 1;
+                    if(x < 6) RandomNum = 2;
+                    else RandomNum = 3;
+                }
+                else if(OpponentHandStrength >= 18) {
+                    int x = r.nextInt(10) + 1;
+                    if(x < 2) RandomNum = 1;
+                    else if(x < 6) RandomNum = 2;
+                    else RandomNum = 3;
+                }
+                else if(OpponentHandStrength >= 14) {
+                    int x = r.nextInt(10) + 1;
+                    if(x < 4) RandomNum = 1;
+                    else if(x < 9) RandomNum = 2;
+                    else RandomNum = 3;
+                }
+                else if(OpponentHandStrength < 14) {
+                    int x = r.nextInt(10) + 1;
+                    if(x < 9) RandomNum = 1;
+                    else RandomNum = 2;
+                }
+                //if computer folds:
+                if(RandomNum == 1) {
+                    PlayerBetTotal -= PlayerBet;
+                    PlayerStack += PlayerBetTotal;
+                    OpponentStack -= OpponentBetTotal;
+                    System.out.println("\nOpponent folds. You win!");
+                    System.out.println("You win $" + PlayerBetTotal + "!");
+                    System.out.println("Your stack is now $" + PlayerStack + ".");
+                    System.out.println("Opponent's stack is now $" + OpponentStack + ".");
+                    deckReset++;
+                    return true;
+                }
+                //if computer calls:
+                else if (RandomNum == 2) {
+                    System.out.println("\nOpponent calls.");
+                    OpponentBetTotal += PlayerBet;
+                }
+                //if computer raises:
+                else {
+                    OpponentBetTotal += PlayerBet;
+                    int RandomNum2;
+                    //if computer has more money free money, then max amount computer can raise is player's total free money
+                    if(OpponentStack > PlayerStack) {
+                        RandomNum2 = r.nextInt(PlayerStack - PlayerBetTotal) + 1;
                     }
-                    //if computer calls:
-                    else if (RandomNum == 3 || RandomNum == 4 || RandomNum == 5 || RandomNum == 6) {
-                        System.out.println("\nOpponent calls.");
-                        OpponentBetTotal += PlayerBet;
-                    }
-                    //if computer raises:
+                    //vise versa if opposite
                     else {
-                        OpponentBetTotal += PlayerBet;
-                        int RandomNum2;
-                        //if computer has more money free money, then max amount computer can raise is player's total free money
-                        if(OpponentStack > PlayerStack) {
-                            RandomNum2 = r.nextInt(PlayerStack - PlayerBetTotal) + 1;
-                        }
-                        //vise versa if opposite
-                        else {
-                            RandomNum2 = r.nextInt(OpponentStack - OpponentBetTotal) + 1;
-                        }
-                        //if computer bets the max, then trigger All In flags
-                        if(RandomNum2 == OpponentStack - OpponentBetTotal || RandomNum2 == PlayerStack - PlayerBetTotal) {
-                            AllInFlagger(BettingRoundSignaler, false, true);
-                            System.out.println("\nOpponent raises by $" + RandomNum2 + ".");
-
-                            if(RandomNum2 == PlayerStack - PlayerBetTotal) {
-                                System.out.println("\nOpponent raises you All In!");
-                            }
-                            else {
-                                System.out.println("\nOpponent's All In!");
-                            }
-                            //player responds to All In
-                            System.out.println("\nChoose an option:");
-                            System.out.println("-------------------");
-                            System.out.println("1: Fold");
-                            System.out.println("2: Call");
-                            int input = scanner.nextInt();
-                            //if player folds:
-                            if(input == 1) {
-                                PlayerStack -= PlayerBetTotal;
-                                OpponentStack += OpponentBetTotal;
-                                System.out.println("\nYou fold. You lose.");
-                                System.out.println("You lost $" + PlayerBetTotal + ".");
-                                System.out.println("Your stack is now $" + PlayerStack + ".");
-                                System.out.println("Opponent's stack is now $" + OpponentStack + ".");
-                                AllInFlagger(BettingRoundSignaler, false, false);
-                                return true;
-                            }
-                            //if player calls:
-                            else if(input == 2) {
-                                OpponentBetTotal += RandomNum2;
-                                PlayerBetTotal += RandomNum2;
-                                return true;
-                            }
-                        }
-                        //if computer didn't trigger any All In situations with its raise:
+                        RandomNum2 = r.nextInt(OpponentStack - OpponentBetTotal) + 1;
+                    }
+                    //if computer bets the max, then trigger All In flags
+                    if(RandomNum2 == OpponentStack - OpponentBetTotal || RandomNum2 == PlayerStack - PlayerBetTotal) {
+                        AllInFlagger(BettingRoundSignaler, false, true);
                         System.out.println("\nOpponent raises by $" + RandomNum2 + ".");
-                        OpponentBetTotal += RandomNum2;
-                        //player chooses response:
+
+                        if(RandomNum2 == PlayerStack - PlayerBetTotal) {
+                            System.out.println("\nOpponent raises you All In!");
+                        }
+                        else {
+                            System.out.println("\nOpponent's All In!");
+                        }
+                        //player responds to All In
                         System.out.println("\nChoose an option:");
                         System.out.println("-------------------");
                         System.out.println("1: Fold");
                         System.out.println("2: Call");
-                        System.out.println("3: Raise");
                         int input = scanner.nextInt();
                         //if player folds:
                         if(input == 1) {
-                            OpponentBetTotal -= RandomNum2;
                             PlayerStack -= PlayerBetTotal;
                             OpponentStack += OpponentBetTotal;
                             System.out.println("\nYou fold. You lose.");
                             System.out.println("You lost $" + PlayerBetTotal + ".");
                             System.out.println("Your stack is now $" + PlayerStack + ".");
                             System.out.println("Opponent's stack is now $" + OpponentStack + ".");
-                            deckReset++;
+                            AllInFlagger(BettingRoundSignaler, false, false);
                             return true;
                         }
                         //if player calls:
                         else if(input == 2) {
+                            OpponentBetTotal += RandomNum2;
                             PlayerBetTotal += RandomNum2;
-                        }
-                        //if player re-raises:
-                        else if(input == 3) {
-                            PlayerBetTotal += RandomNum2;
-                            //calculates how much the player is able to raise
-                            PlayerRaise = PlayerStack - PlayerBetTotal;
-                            if(PlayerRaise <= OpponentStack - OpponentBetTotal) {
-                                System.out.println("How much do you want to raise? (You can raise up to $" + PlayerRaise + ")");
-                            }
-                            else {
-                                PlayerRaise = OpponentStack - OpponentBetTotal;
-                                System.out.println("How much do you want to raise? (You can raise up to $" + PlayerRaise + ")");
-                            }
-                            PlayerBet = scanner.nextInt();
-                            if(PlayerBet <= 0 || PlayerBet > PlayerRaise) terminate();
-                            //if player raises to the max, then trigger All In flags
-                            if(PlayerBet == PlayerRaise) {
-                                AllInFlagger(BettingRoundSignaler, true, true);
-                                if(PlayerRaise == PlayerStack - PlayerBetTotal) {
-                                    System.out.println("\nYou're All In!");
-                                }
-                                else {
-                                    System.out.println("\nYou raise your opponent All In!");
-                                }
-                                //generate computer's response to the All In raise: 10% fold, 90% call 
-                                RandomNum = r.nextInt(10) + 1;
-                                    //computer folds:
-                                    if(RandomNum == 1) {
-                                        PlayerStack += PlayerBetTotal;
-                                        OpponentStack -= OpponentBetTotal;
-                                        System.out.println("\nOpponent folds. You win!");
-                                        System.out.println("You win $" + PlayerBetTotal + "!");
-                                        System.out.println("Your stack is now $" + PlayerStack + ".");
-                                        System.out.println("Opponent's stack is now $" + OpponentStack + ".");
-                                        AllInFlagger(BettingRoundSignaler, true, false);
-                                        return true;
-                                    }
-                                    //computer calls:
-                                    else {
-                                        System.out.println("\nOpponent calls.");
-                                        PlayerBetTotal += PlayerBet;
-                                        OpponentBetTotal += PlayerBet;
-                                        return true;
-                                    }
-                            }
-                            //other wise if the player's raise doesn't cause any All Ins:
-                            PlayerBetTotal += PlayerBet;
-                            //generate computer's response: 30% fold, 70% call
-                            RandomNum = r.nextInt(10) + 1;
-                            //if computer folds:
-                            if(RandomNum == 1 || RandomNum == 2 || RandomNum == 3) {
-                                PlayerBetTotal -= PlayerBet;
-                                PlayerStack += PlayerBetTotal;
-                                OpponentStack -= OpponentBetTotal;
-                                System.out.println("\nOpponent folds. You win!");
-                                System.out.println("You win $" + PlayerBetTotal + "!");
-                                System.out.println("Your stack is now $" + PlayerStack + ".");
-                                System.out.println("Opponent's stack is now $" + OpponentStack + ".");
-                                deckReset++;
-                                return true;
-                            }
-                            //if computer calls:
-                            else {
-                                OpponentBetTotal += PlayerBet;
-                                System.out.println("\nOpponent Calls");
-                            }
-                        }
-                        else {
-                            terminate();
+                            return true;
                         }
                     }
+                    //if computer didn't trigger any All In situations with its raise:
+                    if(OpponentHandStrength >= 18) {
+                        int x = r.nextInt(10) + 1;
+                        if(x < 4) RandomNum = 1;
+                        else RandomNum = 2;
+                    }
+                    else if(OpponentHandStrength < 18) {
+                        int x = r.nextInt(10) + 1;
+                        if(x < 8) RandomNum = 1;
+                        else RandomNum = 2;
+                    }
+                    if(RandomNum == 1) {
+                        RandomNum2 = (int)(RandomNum2 * 0.25);
+                    }
+                    else if(RandomNum == 2) {
+                        RandomNum2 = (int)(RandomNum2 * 0.5);
+                    }
+                    if(RandomNum2 == 0) RandomNum2++;
+                    System.out.println("\nOpponent raises by $" + RandomNum2 + ".");
+                    OpponentBetTotal += RandomNum2;
+                    //player chooses response:
+                    System.out.println("\nChoose an option:");
+                    System.out.println("-------------------");
+                    System.out.println("1: Fold");
+                    System.out.println("2: Call");
+                    System.out.println("3: Raise");
+                    int input = scanner.nextInt();
+                    //if player folds:
+                    if(input == 1) {
+                        OpponentBetTotal -= RandomNum2;
+                        PlayerStack -= PlayerBetTotal;
+                        OpponentStack += OpponentBetTotal;
+                        System.out.println("\nYou fold. You lose.");
+                        System.out.println("You lost $" + PlayerBetTotal + ".");
+                        System.out.println("Your stack is now $" + PlayerStack + ".");
+                        System.out.println("Opponent's stack is now $" + OpponentStack + ".");
+                        deckReset++;
+                        return true;
+                    }
+                    //if player calls:
+                    else if(input == 2) {
+                        PlayerBetTotal += RandomNum2;
+                    }
+                    //if player re-raises:
+                    else if(input == 3) {
+                        PlayerBetTotal += RandomNum2;
+                        //calculates how much the player is able to raise
+                        PlayerRaise = PlayerStack - PlayerBetTotal;
+                        if(PlayerRaise <= OpponentStack - OpponentBetTotal) {
+                            System.out.println("How much do you want to raise? (You can raise up to $" + PlayerRaise + ")");
+                        }
+                        else {
+                            PlayerRaise = OpponentStack - OpponentBetTotal;
+                            System.out.println("How much do you want to raise? (You can raise up to $" + PlayerRaise + ")");
+                        }
+                        PlayerBet = scanner.nextInt();
+                        if(PlayerBet <= 0 || PlayerBet > PlayerRaise) terminate();
+                        
+                        //if player raises to the max, then trigger All In flags
+                        if(PlayerBet == PlayerRaise) {
+                            AllInFlagger(BettingRoundSignaler, true, true);
+                            if(PlayerRaise == PlayerStack - PlayerBetTotal) {
+                                System.out.println("\nYou're All In!");
+                            }
+                            else {
+                                System.out.println("\nYou raise your opponent All In!");
+                            }
+                            //generate computer's response to the All In raise: fold or call
+                            RandomNum = 0;
+                            if(OpponentHandStrength >= 22) {
+                                RandomNum = 2;
+                            }
+                            else if(OpponentHandStrength >= 18) {
+                                int x = r.nextInt(10) + 1;
+                                if(x < 3) RandomNum = 1;
+                                else RandomNum = 2;
+                            }
+                            else if(OpponentHandStrength >= 14) {
+                                int x = r.nextInt(10) + 1;
+                                if(x < 8) RandomNum = 1;
+                                else RandomNum = 2;
+                            }
+                            else if(OpponentHandStrength < 14) {
+                                RandomNum = 1;
+                            }
+                                //computer folds:
+                                if(RandomNum == 1) {
+                                    PlayerStack += PlayerBetTotal;
+                                    OpponentStack -= OpponentBetTotal;
+                                    System.out.println("\nOpponent folds. You win!");
+                                    System.out.println("You win $" + PlayerBetTotal + "!");
+                                    System.out.println("Your stack is now $" + PlayerStack + ".");
+                                    System.out.println("Opponent's stack is now $" + OpponentStack + ".");
+                                    AllInFlagger(BettingRoundSignaler, true, false);
+                                    return true;
+                                }
+                                //computer calls:
+                                else {
+                                    System.out.println("\nOpponent calls.");
+                                    PlayerBetTotal += PlayerBet;
+                                    OpponentBetTotal += PlayerBet;
+                                    return true;
+                                }
+                        }
+                        //other wise if the player's raise doesn't cause any All Ins:
+                        PlayerBetTotal += PlayerBet;
+                        //generate computer's response: fold or call
+                        if(OpponentHandStrength >= 22) {
+                            RandomNum = 2;
+                        }
+                        else if(OpponentHandStrength >= 18) {
+                            int x = r.nextInt(10) + 1;
+                            if(x < 3) RandomNum = 1;
+                            else RandomNum = 2;
+                        }
+                        else if(OpponentHandStrength >= 14) {
+                            int x = r.nextInt(10) + 1;
+                            if(x < 9) RandomNum = 1;
+                            else RandomNum = 2;
+                        }
+                        else if(OpponentHandStrength < 14) {
+                            RandomNum = 1;
+                        }
+                        //if computer folds:
+                        if(RandomNum == 1) {
+                            PlayerBetTotal -= PlayerBet;
+                            PlayerStack += PlayerBetTotal;
+                            OpponentStack -= OpponentBetTotal;
+                            System.out.println("\nOpponent folds. You win!");
+                            System.out.println("You win $" + PlayerBetTotal + "!");
+                            System.out.println("Your stack is now $" + PlayerStack + ".");
+                            System.out.println("Opponent's stack is now $" + OpponentStack + ".");
+                            deckReset++;
+                            return true;
+                        }
+                        //if computer calls:
+                        else {
+                            OpponentBetTotal += PlayerBet;
+                            System.out.println("\nOpponent Calls");
+                        }
+                    }
+                    else {
+                        terminate();
+                    }
+                }
             }
         return false;
     }
@@ -2451,8 +2693,10 @@ public class Poker {
         OpponentThreeOfAKindHigh = 0;
         PlayerTwoPair = false;
         PlayerTwoPairHigh = 0;
+        PlayerTwoPairSecondHigh = 0;
         OpponentTwoPair = false;
         OpponentTwoPairHigh = 0;
+        OpponentTwoPairSecondHigh = 0;
         PlayerOnePair = false;
         PlayerOnePairHigh = 0;
         OpponentOnePair = false;
@@ -2489,6 +2733,32 @@ public class Poker {
         OpponentBetTotal = 0;
         PlayerBetRange = 0;
         PlayerRaise = 0;
+        OpponentHandStrength = 0;
+    }
+    //determines the strength of the computer's hand
+    static void opponentHandStrength(String str1, String str2) {
+        int card1 = NumConverter(str1);
+        int card2 = NumConverter(str2);
+        OpponentHandStrength += card1 + card2;
+        
+        if(card1 == card2) {
+            OpponentHandStrength += 15;
+        }
+        if(card1 >= 11 && card2 >= 11) {
+            OpponentHandStrength += 8;
+        }
+        else if(card1 >= 11) {
+            OpponentHandStrength += 3;
+        }
+        else if(card2 >= 11) {
+            OpponentHandStrength += 3;
+        }
+        if(Math.abs(card1 - card2) == 1) {
+            OpponentHandStrength += 1;
+        }
+        if(SuitChecker(str1).equals(SuitChecker(str2))) {
+            OpponentHandStrength += 2;
+        }
     }
     
 }
