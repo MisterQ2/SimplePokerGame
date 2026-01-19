@@ -32,7 +32,7 @@ The blind for each round is $2.
 
 Dealing hole cards...
 
-Your cards: 2 spades, 6 spades
+Your cards: 2 ♠, 6 ♠
 
 $4 in blinds has been added to the pot.
 
