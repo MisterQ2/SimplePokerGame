@@ -196,8 +196,8 @@ public class Poker {
         Scanner scanner = new Scanner(System.in);
         
         System.out.println("Choose an option:");
-        System.out.println("\n1: Game against Computer");
-        System.out.println("2: Statistical Simulations");
+        System.out.println("\n1: Full Poker Game");
+        System.out.println("2: Monte Carlo Simulator");
         decision = scanner.nextInt();
         
         //Game Against Computer
@@ -422,7 +422,7 @@ public class Poker {
         }
         
     }
-    //Statistical Simulations
+    //Monte Carlo Simulator
     else if(decision == 2) {
         /*in this scenario, I want to test the equity of pocket Aces vs pocket Kings, so I'm manually
         setting the hole cards for both the players while keeping the community cards random. Given 10,000
@@ -440,7 +440,7 @@ public class Poker {
         *NOTE* If you want to manually set a card, you must do so outside the for loop and then remove the card from
         the deck manually via cards.remove(), as seen below for removing str1-str4 from the deck. This way, when you
         go to randomly generate the other cards, they cannot be duplicates of the card you manually chose.
-        */
+        
         
         str1 = "A hearts";
         str2 = "A diamonds";
@@ -451,14 +451,21 @@ public class Poker {
         cards.remove(str2);
         cards.remove(str3);
         cards.remove(str4);
+        */
         
         ArrayList<String> simulationDeck = new ArrayList<>(cards);
         
-        for(int i = 0; i < 10000; i++) {
+        int trials = 10000;
+        
+        for(int i = 0; i < trials; i++) {
             resetHandVariables();
             cards = new ArrayList<>(simulationDeck);
             deckReset = 0;
             
+            str1 = deal(); 
+            str2 = deal(); 
+            str3 = deal(); 
+            str4 = deal(); 
             str5 = deal(); 
             str6 = deal();
             str7 = deal();
@@ -468,6 +475,12 @@ public class Poker {
             Showdown(str1, str2, str3, str4, str5, str6, str7, str8, str9, PlayerBetTotal, OpponentBetTotal);
         }
         //displaying data
+        /* You can use the following statements if you choose to manually set up
+           fixed hole cards for the player and computer.
+        System.out.println("\nPlayer Hand: " + str1 + ", " + str2);
+        System.out.println("Opponent Hand: " + str3 + ", " + str4);
+        System.out.println("Trials: " + trials);
+        */
         System.out.println("\nPlayer Wins: " + PlayerWins);
         System.out.println("Opponent Wins: " + OpponentWins);
         System.out.println("Chops: " + Chops);
