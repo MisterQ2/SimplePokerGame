@@ -10,6 +10,19 @@ public class Poker {
     //DECK OF CARDS
     static ArrayList<String> cards = new ArrayList<String>();
     static ArrayList<String> deckChanger;
+    //Players' Hole Cards and Community Cards
+    //Player hole cards
+    static String str1 = "";
+    static String str2 = "";
+    //Computer hole cards
+    static String str3 = "";
+    static String str4 = "";
+    //Community Cards
+    static String str5;
+    static String str6;
+    static String str7;
+    static String str8;
+    static String str9;
     
     //ALL IN VARIABLES
     static boolean PlayerAllInPreFlop = false;
@@ -142,18 +155,6 @@ public class Poker {
 
 
     public static void main(String[] args) {
-        //Player's Hole Cards
-        String str1 = "";
-        String str2 = "";
-        //Computer's Hole Cards
-        String str3 = "";
-        String str4 = "";
-        //Community Cards
-        String str5;
-        String str6;
-        String str7;
-        String str8;
-        String str9;
         
         
         //Deck of Cards definition starts
@@ -232,13 +233,13 @@ public class Poker {
             
             //Logic for dealing the rest of the cards and showdown after someone goes All In.
             if(PlayerAllInPreFlop || PlayerAllInFlop || PlayerAllInTurn || PlayerAllInRiver || OpponentAllInPreFlop || OpponentAllInFlop || OpponentAllInTurn || OpponentAllInRiver) {
-                str5 = deal();
-                str6 = deal();
-                str7 = deal();
-                str8 = deal();
-                str9 = deal();
                 
                 if(PlayerAllInPreFlop || OpponentAllInPreFlop) {
+                    
+                    str5 = deal();
+                    str6 = deal();
+                    str7 = deal();
+                    
                     System.out.println("\n@@@@@@@@@@@@");
                     System.out.println("    FLOP");
                     System.out.println("@@@@@@@@@@@@");
@@ -263,6 +264,8 @@ public class Poker {
                     System.out.println("\n@@@@@@@@@@@@");
                     System.out.println("    TURN");
                     System.out.println("@@@@@@@@@@@@");
+                    
+                    str8 = deal();
 
                     System.out.println("\n" + str5 + ", " + str6 + ", " + str7 + ", " + str8);
                     System.out.println("\nYour Hand: " + str1 + ", " + str2);
@@ -282,6 +285,8 @@ public class Poker {
                     System.out.println("\n@@@@@@@@@@@@@");
                     System.out.println("    RIVER");
                     System.out.println("@@@@@@@@@@@@@");
+                    
+                    str9 = deal();
 
                     System.out.println("\n" + str5 + ", " + str6 + ", " + str7 + ", " + str8 + ", " + str9);
                     System.out.println("\nYour Hand: " + str1 + ", " + str2);
@@ -440,7 +445,7 @@ public class Poker {
         *NOTE* If you want to manually set a card, you must do so outside the for loop and then remove the card from
         the deck manually via cards.remove(), as seen below for removing str1-str4 from the deck. This way, when you
         go to randomly generate the other cards, they cannot be duplicates of the card you manually chose.
-        
+        */
         
         str1 = "A hearts";
         str2 = "A diamonds";
@@ -451,7 +456,6 @@ public class Poker {
         cards.remove(str2);
         cards.remove(str3);
         cards.remove(str4);
-        */
         
         ArrayList<String> simulationDeck = new ArrayList<>(cards);
         
@@ -462,10 +466,6 @@ public class Poker {
             cards = new ArrayList<>(simulationDeck);
             deckReset = 0;
             
-            str1 = deal(); 
-            str2 = deal(); 
-            str3 = deal(); 
-            str4 = deal(); 
             str5 = deal(); 
             str6 = deal();
             str7 = deal();
@@ -475,12 +475,9 @@ public class Poker {
             Showdown(str1, str2, str3, str4, str5, str6, str7, str8, str9, PlayerBetTotal, OpponentBetTotal);
         }
         //displaying data
-        /* You can use the following statements if you choose to manually set up
-           fixed hole cards for the player and computer.
         System.out.println("\nPlayer Hand: " + str1 + ", " + str2);
         System.out.println("Opponent Hand: " + str3 + ", " + str4);
         System.out.println("Trials: " + trials);
-        */
         System.out.println("\nPlayer Wins: " + PlayerWins);
         System.out.println("Opponent Wins: " + OpponentWins);
         System.out.println("Chops: " + Chops);
@@ -2052,6 +2049,8 @@ public class Poker {
             int option = scanner.nextInt();
             //if user chooses 1, they fold
             if(option == 1) {
+                PlayerStack -= PlayerBetTotal;
+                OpponentStack += OpponentBetTotal;
                 System.out.println("\nYou fold. You lose.");
                 System.out.println("You lost $" + PlayerBetTotal + ".");
                 System.out.println("Your stack is now $" + PlayerStack + ".");
