@@ -2,6 +2,10 @@
 
 A complete heads-up Texas Hold'em poker game with AI opponent and Monte Carlo equity calculator, built in Java (NetBeans Console).
 
+## Motivation
+
+Built this project to see how far I can go with my current programming skills while building something fun--I was able to explore AI decision-making and probability modeling.
+
 ## Features
 
 - **Full Poker Game**: Play heads-up poker against an AI opponent with complete betting rounds (pre-flop, flop, turn, river)
@@ -11,7 +15,7 @@ A complete heads-up Texas Hold'em poker game with AI opponent and Monte Carlo eq
 
 ## Demo
 
-### Full Poker Game:
+### 1. Full Poker Game:
 
 ```text
 Enter Buy In:
@@ -60,10 +64,10 @@ Opponent Calls
     SHOWDOWN
 @@@@@@@@@@@@@@@@
 
-The Board: 10 diamonds, Q spades, 5 diamonds, A hearts, 7 spades
+The Board: 10 ♦, Q ♠, 5 ♦, A ♥, 7 ♠
 
-Your Hand: 2 spades, 6 spades
-Opponent's Hand: A spades, 10 spades
+Your Hand: 2 ♠, 6 ♠
+Opponent's Hand: A ♠, 10 ♠
 
 You lose to your opponent's Two Pair.
 You lost $90.
@@ -73,16 +77,16 @@ Opponent's stack is now $190.
 
 ---
 
-### Monte Carlo Simulator:
+### 2. Monte Carlo Simulator:
 
 ```text
-Player Hand: A hearts, A diamonds
-Opponent Hand: K clubs, K spades
+Player Hand: A ♥, A ♦
+Opponent Hand: K ♣, K ♠
 Trials: 10000
 
-Player Wins: 8164.0
-Opponent Wins: 1798.0
-Chops: 38.0
+Player Wins: 8164
+Opponent Wins: 1798
+Chops: 38
 
 Player Equity: 81.83%
 Opponent Equity: 18.17%
@@ -138,4 +142,4 @@ If I were to continue this project, I would:
 ---
 
 ## Author
-Adarsh N.
+Adarsh N. (@MisterQ2)
