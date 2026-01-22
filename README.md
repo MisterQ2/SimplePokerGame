@@ -4,7 +4,7 @@ A complete heads-up Texas Hold'em poker game with AI opponent and Monte Carlo eq
 
 ## Motivation
 
-Built this project to see how far I can go with my current programming skills while building something fun--I was able to explore AI decision-making and probability modeling.
+Built this project to see how far I can go with my current programming knowledge while building something interesting. I explored heuristic decision-making and probability modeling through the development of the AI bot and equity calculator.
 
 ## Features
 
