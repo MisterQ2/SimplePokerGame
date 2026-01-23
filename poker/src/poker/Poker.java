@@ -2805,7 +2805,6 @@ public class Poker {
         }
     }
 
-    //END OF PROGRAM//
-    
 }
 
+//END OF PROGRAM//
