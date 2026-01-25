@@ -1,10 +1,10 @@
 # Texas Hold'em Poker Simulator
 
-A complete heads-up Texas Hold'em poker game with AI opponent and Monte Carlo equity calculator, built in Java (NetBeans Console).
+A complete heads-up Texas Hold’em poker simulator written in Java, featuring an AI opponent and a Monte Carlo–based equity calculator for probabilistic decision-making.
 
 ## Motivation
 
-Built this project to see how far I can go with my current programming knowledge while building something interesting. I explored heuristic decision-making and probability modeling through the development of the AI bot and equity calculator.
+Built this project to see how far I could push my self-taught programming skills while building something meaningful. Coming from a competitive chess background, I was especially interested in modeling heuristic decision-making and probability under uncertainty through the AI bot and equity calculator.
 
 ## Features
 
@@ -111,6 +111,13 @@ These results match commercial poker software (PokerStove, Equilab) within stati
 3. Compared results against established poker theory and commercial tools
 4. All results accurate within expected variance
 
+## What I Learned
+
+- Managing complex state across multiple game phases
+- Implementing comprehensive game logic with many edge cases
+- Building a basic AI using hand strength evaluation
+- Using Monte Carlo methods for probability calculations
+
 ## How to Run
 
 1. Clone this repository
@@ -135,13 +142,6 @@ These results match commercial poker software (PokerStove, Equilab) within stati
 - Calculates win probability, loss probability, and chop probability
 - Can test specific hand matchups (e.g., A-A vs K-K)
 
-## What I Learned
-
-- Managing complex state across multiple game phases
-- Implementing comprehensive game logic with many edge cases
-- Building a basic AI using hand strength evaluation
-- Using Monte Carlo methods for probability calculations
-
 ## Future Improvements
 
 If I were to continue this project, I would:
@@ -159,4 +159,4 @@ If I were to continue this project, I would:
 ---
 
 ## Author
-Adarsh N. (@MisterQ2)
+Adarsh N.
